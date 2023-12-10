@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 
 const post = async (parent, args, context, info) => {
   const { userId } = context;
-  console.log(userId);
   const newLink = await context.prisma.link.create({
     data: {
       url: args.url,
@@ -48,8 +47,34 @@ const login = async (parent, args, context) => {
   return { token, user };
 };
 
+const vote = async (parent, args, context, info) => {
+  const { userId } = context;
+  const existingVote = await context.prisma.vote.findUnique({
+    where: {
+      linkId_userId: {
+        userId: userId,
+        linkId: Number(args.linkId),
+      },
+    },
+  });
+  console.log(existingVote, typeof args.linkId, typeof userId);
+
+  if (existingVote) {
+    throw new Error("You vote already!");
+  }
+  const newVote = context.prisma.vote.create({
+    data: {
+      user: { connect: { id: userId } },
+      link: { connect: { id: Number(args.linkId) } },
+    },
+  });
+  context.pubsub.publish("NEW_VOTE", newVote);
+
+  return newVote;
+};
 module.exports = {
   signup,
   post,
   login,
+  vote,
 };
