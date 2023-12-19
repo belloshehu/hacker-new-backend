@@ -57,7 +57,6 @@ const vote = async (parent, args, context, info) => {
       },
     },
   });
-  console.log(existingVote, typeof args.linkId, typeof userId);
 
   if (existingVote) {
     throw new Error("You vote already!");

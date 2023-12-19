@@ -1,6 +1,12 @@
 type Query {
   info: String!
   feed(filter: String, skip: Int, take: Int, orderBy: LinkOrderByInput): Feed!
+  link(id: Int!): SingleLinkPayload!
+}
+
+type SingleLinkPayload {
+  singleLink: Link!
+  topVotedLinks: [Link!]
 }
 
 type Feed {
@@ -18,6 +24,7 @@ type Mutation {
 type Link {
   id: ID!
   description: String!
+  createdAt: String!
   url: String!
   postedBy: User!
   votes: [Vote!]!
